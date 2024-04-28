@@ -1,19 +1,33 @@
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { useState } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { CountryPicker } from 'react-native-country-codes-picker'
 
-import Colors from '@/constants/Colors'
-import { defaultStyles } from '@/styles/Styles'
+import Colors from '@/styles/colors'
+import { defaultStyles } from '@/styles/styles'
+import { useSignUp } from '@clerk/clerk-expo'
 
 export default function Page() {
   const [show, setShow] = useState(false)
   const [countryCode, setCountryCode] = useState('+48')
   const [phoneNumber, setPhoneNumber] = useState('')
 
-  const keyboardVerticalOffset = Platform.OS == 'ios' ? 80 : 0
+  const router = useRouter()
+  const { signUp } = useSignUp()
 
-  const onSignup = async () => {}
+  const onSignup = async () => {
+    const fullPhoneNumber = `${countryCode}${phoneNumber}`
+      router.push({ pathname: '/verify/[phone]', params: { phone: fullPhoneNumber } })
+
+    // try {
+    //   await signUp!.create({ phoneNumber: fullPhoneNumber })
+    //   router.push({ pathname: '/verify/[phone]', params: { phone: fullPhoneNumber } })
+    // } catch (error) {
+    //   console.error('Error signing up', error)
+    // }
+  }
+
+  const keyboardVerticalOffset = Platform.OS == 'ios' ? 80 : 0
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}>
@@ -61,6 +75,7 @@ export default function Page() {
     </KeyboardAvoidingView>
   )
 }
+
 const styles = StyleSheet.create({
   inputContainer: { marginVertical: 40, flexDirection: 'row' },
   input: { backgroundColor: Colors.lightGray, padding: 20, borderRadius: 16, fontSize: 20, marginRight: 10 },

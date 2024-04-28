@@ -4,10 +4,14 @@ import { Stack, useRouter } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
 
-import Colors from '@/constants/Colors'
+import Colors from '@/styles/colors'
 import NavigationButton from '@/modules/navigation/components/NavigationButton'
+import { tokenCache } from '@/utils/clerk'
+import { ClerkProvider } from '@clerk/clerk-expo'
 import { StatusBar } from 'expo-status-bar'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -65,15 +69,27 @@ export function InitialLayout() {
         }}
       />
       <Stack.Screen name="help" options={{ title: 'Help', presentation: 'modal' }}></Stack.Screen>
+      <Stack.Screen
+        name="verify/[phone]"
+        options={{
+          title: '',
+          headerBackTitle: '',
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: Colors.background },
+          headerLeft: () => <NavigationButton iconName="arrow-back" onPress={router.back} />,
+        }}
+      />
     </Stack>
   )
 }
 
 export default function RootLayoutNav() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="light" />
-      <InitialLayout />
-    </GestureHandlerRootView>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style="light" />
+        <InitialLayout />
+      </GestureHandlerRootView>
+    </ClerkProvider>
   )
 }

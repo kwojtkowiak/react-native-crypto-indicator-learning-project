@@ -1,8 +1,7 @@
-import Colors from '@/constants/Colors'
+import Colors from '@/styles/colors'
+import { IconName } from '@/types'
 import { Ionicons } from '@expo/vector-icons'
 import { TouchableOpacity } from 'react-native'
-
-type IconName = keyof typeof Ionicons.glyphMap
 
 type NavigationButtonProps = {
   onPress: () => void

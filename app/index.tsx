@@ -3,8 +3,8 @@ import { ResizeMode, Video } from 'expo-av'
 import { Link } from 'expo-router'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-import Colors from '@/constants/Colors'
-import { defaultStyles } from '@/styles/Styles'
+import Colors from '@/styles/colors'
+import { defaultStyles } from '@/styles/styles'
 
 export default function Page() {
   const [assets, error] = useAssets([require('@/assets/videos/video1.mp4')])
