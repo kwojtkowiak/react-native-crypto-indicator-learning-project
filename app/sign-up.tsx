@@ -7,7 +7,7 @@ import { defaultStyles } from '@/styles/Styles'
 
 export default function Page() {
   const [show, setShow] = useState(false)
-  const [countryCode, setCountryCode] = useState('')
+  const [countryCode, setCountryCode] = useState('+48')
 
   const onSignup = async () => {}
   return (
@@ -17,16 +17,10 @@ export default function Page() {
         Enter your phone number. We will send you a confirmation code there
       </Text>
       <View style={styles.inputContainer}>
-        <TouchableOpacity onPress={() => setShow(true)} style={styles.input} />
-        <Text
-          style={{
-            color: 'blue',
-            fontSize: 36,
-          }}
-        >
-          {countryCode}
-        </Text>
-        <TextInput style={styles.input} placeholder="Mobile number" keyboardType="numeric" />
+        <TouchableOpacity style={styles.input} onPress={() => setShow(true)}>
+          <Text style={{ fontSize: 20 }}>{countryCode || 'Select Country Code'}</Text>
+        </TouchableOpacity>
+        <TextInput style={[styles.input, { flex: 1 }]} placeholder="Mobile number" keyboardType="numeric" />
       </View>
       <CountryPicker
         lang={'pl'}
