@@ -3,10 +3,11 @@ import { useState } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { CountryPicker } from 'react-native-country-codes-picker'
 
+import { HeaderAndDesc } from '@/components/HeaderAndDesc'
+import i18n from '@/localization/i18n'
 import Colors from '@/styles/colors'
 import { defaultStyles } from '@/styles/styles'
 import { useSignUp } from '@clerk/clerk-expo'
-import { HeaderAndDesc } from '@/components/HeaderAndDesc'
 
 export default function Page() {
   const [show, setShow] = useState(false)
@@ -63,7 +64,7 @@ export default function Page() {
           <Text style={defaultStyles.buttonText}>Sign up</Text>
         </TouchableOpacity>
         <CountryPicker
-          lang={'pl'}
+          lang={i18n.language}
           show={show}
           pickerButtonOnPress={(item) => {
             setCountryCode(item.dial_code)

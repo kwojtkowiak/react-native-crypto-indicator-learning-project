@@ -12,12 +12,13 @@ import {
 } from 'react-native'
 import { CountryPicker } from 'react-native-country-codes-picker'
 
+import { HeaderAndDesc } from '@/components/HeaderAndDesc'
 import { LoginPanel } from '@/components/LoginPanel'
+import i18n from '@/localization/i18n'
 import Colors from '@/styles/colors'
 import { defaultStyles } from '@/styles/styles'
 import { SignInType } from '@/types'
 import { isClerkAPIResponseError, useSignIn } from '@clerk/clerk-expo'
-import { HeaderAndDesc } from '@/components/HeaderAndDesc'
 
 export default function Page() {
   const [show, setShow] = useState(false)
@@ -86,7 +87,7 @@ export default function Page() {
         </View>
         <LoginPanel />
         <CountryPicker
-          lang={'pl'}
+          lang={i18n.language}
           show={show}
           pickerButtonOnPress={(item) => {
             setCountryCode(item.dial_code)
