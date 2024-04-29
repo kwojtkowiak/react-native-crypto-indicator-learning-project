@@ -1,8 +1,9 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { useFonts } from 'expo-font'
-import { Stack, useRouter } from 'expo-router'
+import { Stack, useRouter, useSegments } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
+import { View, Text } from 'react-native'
 
 import Colors from '@/styles/colors'
 import NavigationButton from '@/modules/navigation/components/NavigationButton'
@@ -28,6 +29,7 @@ export function InitialLayout() {
   })
   const router = useRouter()
   const { isLoaded, isSignedIn } = useAuth()
+  const segments = useSegments()
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -44,8 +46,8 @@ export function InitialLayout() {
     console.log('isSignedIn', isSignedIn)
   }, [isSignedIn])
 
-  if (!loaded) {
-    return null
+  if (!loaded || !isLoaded) {
+    return <Text>Loading...</Text>
   }
 
   return (
