@@ -6,6 +6,7 @@ import { CountryPicker } from 'react-native-country-codes-picker'
 import Colors from '@/styles/colors'
 import { defaultStyles } from '@/styles/styles'
 import { useSignUp } from '@clerk/clerk-expo'
+import { HeaderAndDesc } from '@/components/HeaderAndDesc'
 
 export default function Page() {
   const [show, setShow] = useState(false)
@@ -17,14 +18,14 @@ export default function Page() {
 
   const onSignup = async () => {
     const fullPhoneNumber = `${countryCode}${phoneNumber}`
-      router.push({ pathname: '/verify/[phone]', params: { phone: fullPhoneNumber } })
+    try {
+      await signUp!.create({ phoneNumber: fullPhoneNumber })
+      signUp!.preparePhoneNumberVerification()
 
-    // try {
-    //   await signUp!.create({ phoneNumber: fullPhoneNumber })
-    //   router.push({ pathname: '/verify/[phone]', params: { phone: fullPhoneNumber } })
-    // } catch (error) {
-    //   console.error('Error signing up', error)
-    // }
+      router.push({ pathname: '/verify/[phone]', params: { phone: fullPhoneNumber } })
+    } catch (error) {
+      console.error('Error signing up', error)
+    }
   }
 
   const keyboardVerticalOffset = Platform.OS == 'ios' ? 80 : 0
@@ -32,10 +33,10 @@ export default function Page() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}>
       <View style={defaultStyles.container}>
-        <Text style={defaultStyles.header}>Let's get started!</Text>
-        <Text style={defaultStyles.descriptionText}>
-          Enter your phone number. We will send you a confirmation code there
-        </Text>
+        <HeaderAndDesc
+          headerText="Let's get started!"
+          descText="Enter your phone number. We will send you a confirmation code there"
+        />
         <View style={styles.inputContainer}>
           <TouchableOpacity style={styles.input} onPress={() => setShow(true)}>
             <Text style={{ fontSize: 20 }}>{countryCode || 'Select Country Code'}</Text>

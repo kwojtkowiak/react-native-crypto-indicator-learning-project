@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import Colors from '@/styles/colors'
 import NavigationButton from '@/modules/navigation/components/NavigationButton'
 import { tokenCache } from '@/utils/clerk'
-import { ClerkProvider } from '@clerk/clerk-expo'
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo'
 import { StatusBar } from 'expo-status-bar'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
@@ -27,6 +27,8 @@ export function InitialLayout() {
     ...FontAwesome.font,
   })
   const router = useRouter()
+  const { isLoaded, isSignedIn } = useAuth()
+
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error
@@ -37,6 +39,10 @@ export function InitialLayout() {
       SplashScreen.hideAsync()
     }
   }, [loaded])
+
+  useEffect(() => {
+    console.log('isSignedIn', isSignedIn)
+  }, [isSignedIn])
 
   if (!loaded) {
     return null

@@ -16,7 +16,3 @@ export const tokenCache = {
     }
   },
 }
-
-export async function verifyCode() {}
-
-export async function verifySignIn() {}

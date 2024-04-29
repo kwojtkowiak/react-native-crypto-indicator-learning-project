@@ -17,11 +17,13 @@ import Colors from '@/styles/colors'
 import { defaultStyles } from '@/styles/styles'
 import { SignInType } from '@/types'
 import { isClerkAPIResponseError, useSignIn } from '@clerk/clerk-expo'
+import { HeaderAndDesc } from '@/components/HeaderAndDesc'
 
 export default function Page() {
   const [show, setShow] = useState(false)
   const [countryCode, setCountryCode] = useState('+48')
   const [phoneNumber, setPhoneNumber] = useState('')
+
   const router = useRouter()
   const { signIn } = useSignIn()
 
@@ -41,7 +43,7 @@ export default function Page() {
 
         await signIn!.prepareFirstFactor({ strategy: 'phone_code', phoneNumberId })
 
-        router.push({ pathname: '/verify/[phone]', params: { phone: fullPhoneNumber, isLogin: 'true' } })
+        router.push({ pathname: '/verify/[phone]', params: { phone: fullPhoneNumber, islogin: 'true' } })
       } catch (error) {
         console.log('error', JSON.stringify(error, null, 2))
         if (isClerkAPIResponseError(error)) {
@@ -56,8 +58,7 @@ export default function Page() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}>
       <View style={defaultStyles.container}>
-        <Text style={defaultStyles.header}>Welcome back</Text>
-        <Text style={defaultStyles.descriptionText}>Enter phone number of your account</Text>
+        <HeaderAndDesc headerText={'Welcome back'} descText="Enter phone number of your account" />
         <View style={styles.inputContainer}>
           <TouchableOpacity style={styles.input} onPress={() => setShow(true)}>
             <Text style={{ fontSize: 20 }}>{countryCode || 'Select Country Code'}</Text>

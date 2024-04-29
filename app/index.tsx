@@ -3,6 +3,7 @@ import { ResizeMode, Video } from 'expo-av'
 import { Link } from 'expo-router'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
+import { HeaderAndDesc } from '@/components/HeaderAndDesc'
 import Colors from '@/styles/colors'
 import { defaultStyles } from '@/styles/styles'
 
@@ -24,7 +25,7 @@ export default function Page() {
         error && <Text style={styles.errorMsg}>{error.message}</Text>
       )}
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Change the way you invest in crypto!</Text>
+        <HeaderAndDesc headerText="Change the way you invest in crypto!" headerStyle={styles.header} />
       </View>
       <View style={styles.buttons}>
         <Link href="/login" asChild style={[defaultStyles.pillButton, { flex: 1, backgroundColor: Colors.dark }]}>
