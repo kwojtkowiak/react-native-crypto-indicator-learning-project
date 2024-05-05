@@ -23,7 +23,6 @@ export default function Layout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ size, color }) => <FontAwesome name="registered" size={size} color={color} />,
-          headerTransparent: true,
         }}
       />
       <Tabs.Screen
@@ -45,7 +44,6 @@ export default function Layout() {
         options={{
           title: 'Crypto',
           tabBarIcon: ({ size, color }) => <FontAwesome name="bitcoin" size={size} color={color} />,
-          headerTransparent: true,
         }}
       />
       <Tabs.Screen
