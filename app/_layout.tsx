@@ -3,7 +3,7 @@ import { useFonts } from 'expo-font'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, ActivityIndicator } from 'react-native'
 
 import Colors from '@/styles/colors'
 import NavigationButton from '@/modules/navigation/components/NavigationButton'
@@ -11,6 +11,7 @@ import { tokenCache } from '@/utils/clerk'
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo'
 import { StatusBar } from 'expo-status-bar'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import colors from '@/styles/colors'
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 
@@ -44,14 +45,23 @@ export function InitialLayout() {
 
   useEffect(() => {
     console.log('isSignedIn', isSignedIn)
+    if (!isLoaded) return
+
+    const inAuthGroup = segments[0] == '(authenticated)'
+
+    if (isSignedIn && !inAuthGroup) {
+      router.replace('/(authenticated)/(tabs)/home')
+    } else if (!isSignedIn) {
+      router.replace('/')
+    }
   }, [isSignedIn])
 
   if (!loaded || !isLoaded) {
-    return <Text>Loading...</Text>
+    return <ActivityIndicator color={colors.primary} />
   }
 
   return (
-    <Stack>
+    <Stack initialRouteName="index">
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
         name="sign-up"
@@ -87,6 +97,7 @@ export function InitialLayout() {
           headerLeft: () => <NavigationButton iconName="arrow-back" onPress={router.back} />,
         }}
       />
+      <Stack.Screen name="(authenticated)/(tabs)" options={{ headerShown: false }} />
     </Stack>
   )
 }
