@@ -1,9 +1,8 @@
 import { ActivityList } from '@/components/ActivityList'
+import WidgetList from '@/components/SortableList/WidgetList'
 import TransactionList from '@/modules/home/components/TransactionList'
 import { useBalanceStore } from '@/store/balanceStore'
 import colors from '@/styles/colors'
-import { defaultStyles } from '@/styles/styles'
-import { Ionicons } from '@expo/vector-icons'
 import { StyleSheet, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 
@@ -19,7 +18,9 @@ export default function Page() {
         </View>
       </View>
       <ActivityList />
+      {/* Could do with global state, but wanted to pass transactions as prop for practice */}
       <TransactionList transactions={transactions} />
+      <WidgetList />
     </ScrollView>
   )
 }

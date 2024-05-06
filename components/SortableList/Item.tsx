@@ -1,28 +1,30 @@
-import React, { ReactNode, RefObject } from 'react'
+import React, { ReactNode } from 'react'
 import { Dimensions, StyleSheet } from 'react-native'
-import Animated, {
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useAnimatedReaction,
-  withSpring,
-  scrollTo,
-  withTiming,
-  useSharedValue,
-  runOnJS,
-} from 'react-native-reanimated'
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler'
+import Animated, {
+  AnimatedRef,
+  runOnJS,
+  scrollTo,
+  SharedValue,
+  useAnimatedGestureHandler,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { animationConfig, COL, getOrder, getPosition, Positions, SIZE } from './Config'
 
 interface ItemProps {
   children: ReactNode
-  positions: Animated.SharedValue<Positions>
+  positions: SharedValue<Positions>
   id: string
   editing: boolean
   onDragEnd: (diffs: Positions) => void
-  scrollView: RefObject<Animated.ScrollView>
-  scrollY: Animated.SharedValue<number>
+  scrollView: AnimatedRef<Animated.ScrollView>
+  scrollY: SharedValue<number>
 }
 
 const Item = ({ children, positions, id, onDragEnd, scrollView, scrollY, editing }: ItemProps) => {
