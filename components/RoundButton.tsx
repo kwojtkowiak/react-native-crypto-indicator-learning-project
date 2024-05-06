@@ -11,7 +11,7 @@ type RoundButton = {
 }
 export function RoundButton(props: RoundButton) {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={props.onPress}>
       <View style={styles.circle}>
         <Ionicons name={props.icon} size={30} color={colors.dark} />
       </View>
