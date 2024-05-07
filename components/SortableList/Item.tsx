@@ -34,6 +34,7 @@ const Item = ({ children, positions, id, onDragEnd, scrollView, scrollY, editing
   const isGestureActive = useSharedValue(false)
 
   const position = getPosition(positions.value[id]!)
+  console.log("🚀 ~ Item ~ position:", position)
   const translateX = useSharedValue(position.x)
   const translateY = useSharedValue(position.y)
 

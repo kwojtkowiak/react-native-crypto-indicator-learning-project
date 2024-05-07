@@ -11,7 +11,7 @@ export type IconName = keyof typeof Ionicons.glyphMap
 export type Transaction = {
   id: string
   amount: number
-  date: Date
+  date: Date | string
   title: string
 }
 
@@ -20,4 +20,13 @@ export type BalanceState = {
   runTransaction: (transaction: Transaction) => void
   balance: () => number
   clearTransactions: () => void
+}
+
+export type TilePosition = {
+  x: number
+  y: number
+}
+
+export type TilePositionsState = {
+  [id: string]: TilePosition
 }
