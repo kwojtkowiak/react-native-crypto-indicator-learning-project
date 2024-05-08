@@ -1,16 +1,22 @@
+import { useHeaderHeight } from '@react-navigation/elements'
+import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
+
 import { ActivityList } from '@/components/ActivityList'
 import WidgetList from '@/components/SortableList/WidgetList'
 import TransactionList from '@/modules/home/components/TransactionList'
 import { useBalanceStore } from '@/store/balanceStore'
 import colors from '@/styles/colors'
-import { StyleSheet, Text, View } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
 
 export default function Page() {
   const { balance, transactions } = useBalanceStore()
+  const headerHeight = useHeaderHeight()
 
   return (
-    <ScrollView style={{ backgroundColor: colors.background }}>
+    <ScrollView
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 60 }}
+    >
       <View style={styles.account}>
         <View style={styles.row}>
           <Text style={styles.balance}>{balance()}</Text>

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import Colors from '@/styles/colors'
+import colors from '@/styles/colors'
 
 export const defaultStyles = StyleSheet.create({
   container: {
@@ -57,5 +58,13 @@ export const defaultStyles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 16,
     gap: 20,
+  },
+  circle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.lightGray,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
