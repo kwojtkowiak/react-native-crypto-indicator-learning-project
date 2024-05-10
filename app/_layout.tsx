@@ -44,13 +44,12 @@ export function InitialLayout() {
   }, [loaded])
 
   useEffect(() => {
-    console.log('isSignedIn', isSignedIn)
     if (!isLoaded) return
 
     const inAuthGroup = segments[0] == '(authenticated)'
 
     if (isSignedIn && !inAuthGroup) {
-      router.replace('/(authenticated)/(tabs)/home')
+      router.replace('/(authenticated)/(tabs)/crypto')
     } else if (!isSignedIn) {
       router.replace('/')
     }
