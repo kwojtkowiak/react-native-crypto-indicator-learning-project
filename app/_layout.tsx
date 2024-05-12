@@ -1,23 +1,24 @@
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { useFonts } from 'expo-font'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
-import { useEffect } from 'react'
-import { View, Text, ActivityIndicator } from 'react-native'
-
-import Colors from '@/styles/colors'
-import NavigationButton from '@/modules/navigation/components/NavigationButton'
-import { tokenCache } from '@/utils/clerk'
-import { ClerkProvider, useAuth } from '@clerk/clerk-expo'
 import { StatusBar } from 'expo-status-bar'
+import { useEffect } from 'react'
+import { ActivityIndicator } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+
+import NavigationButton from '@/modules/navigation/components/NavigationButton'
 import colors from '@/styles/colors'
+import { tokenCache } from '@/utils/clerk.utils'
+import { queryClient } from '@/utils/queryClient.utils'
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+  ErrorBoundary
 } from 'expo-router'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -68,7 +69,7 @@ export function InitialLayout() {
           title: '',
           headerBackTitle: '',
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: Colors.background },
+          headerStyle: { backgroundColor: colors.background },
           headerLeft: () => <NavigationButton iconName="arrow-back" onPress={router.back} />,
         }}
       />
@@ -78,7 +79,7 @@ export function InitialLayout() {
           title: '',
           headerBackTitle: '',
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: Colors.background },
+          headerStyle: { backgroundColor: colors.background },
           headerLeft: () => <NavigationButton iconName="arrow-back" onPress={router.back} />,
           headerRight: () => (
             <NavigationButton iconName="help-circle-outline" onPress={() => router.navigate('help')} />
@@ -92,7 +93,7 @@ export function InitialLayout() {
           title: '',
           headerBackTitle: '',
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: Colors.background },
+          headerStyle: { backgroundColor: colors.background },
           headerLeft: () => <NavigationButton iconName="arrow-back" onPress={router.back} />,
         }}
       />
@@ -103,11 +104,13 @@ export function InitialLayout() {
 
 export default function RootLayoutNav() {
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar style="light" />
-        <InitialLayout />
-      </GestureHandlerRootView>
-    </ClerkProvider>
+    <QueryClientProvider client={queryClient}>
+      <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar style="light" />
+          <InitialLayout />
+        </GestureHandlerRootView>
+      </ClerkProvider>
+    </QueryClientProvider>
   )
 }
