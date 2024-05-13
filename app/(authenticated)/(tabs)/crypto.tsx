@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { Text, View, Image } from 'react-native'
+import { ActivityIndicator, Image, Text, View } from 'react-native'
 
 import { QUERY_KEYS } from '@/constants/queryKeys'
+import colors from '@/styles/colors'
 import { CryptoCurrency } from '@/types'
+import { Link } from 'expo-router'
 
 export default function Page() {
   const currencies = useQuery({
@@ -24,13 +26,19 @@ export default function Page() {
     enabled: !!ids,
   })
 
+  if (currencies.isLoading) {
+    return <ActivityIndicator color={colors.primary} />
+  }
+
   return (
     <View>
       {currencies.data?.map((currency: CryptoCurrency) => (
-        <View key={currency.id} style={{ flexDirection: 'row' }}>
-          <Image source={{ uri: data?.[currency.id].logo }} style={{ width: 32, height: 32 }}></Image>
-          <Text key={currency.id}>{currency.name}</Text>
-        </View>
+        <Link key={currency.id} href={`/crypto/${currency.id}`}>
+          <View key={currency.id} style={{ flexDirection: 'row' }}>
+            <Image source={{ uri: data?.[currency.id].logo }} style={{ width: 32, height: 32 }}></Image>
+            <Text key={currency.id}>{currency.name}</Text>
+          </View>
+        </Link>
       ))}
     </View>
   )
