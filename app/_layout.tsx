@@ -6,7 +6,7 @@ import { Stack, useRouter, useSegments } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
-import { ActivityIndicator } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import NavigationButton from '@/modules/navigation/components/NavigationButton'
@@ -98,6 +98,21 @@ export function InitialLayout() {
         }}
       />
       <Stack.Screen name="(authenticated)/(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="(authenticated)/crypto/[id]"
+        options={{
+          title: '',
+          headerLeft: () => <NavigationButton iconName="arrow-back" onPress={router.back} />,
+          headerRight: () => (
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <NavigationButton iconName="notifications-outline" onPress={() => router.navigate('help')} />
+              <NavigationButton iconName="star-outline" onPress={() => router.navigate('help')} />
+            </View>
+          ),
+          headerTransparent: true,
+          headerTitleAlign: 'center',
+        }}
+      />
     </Stack>
   )
 }
