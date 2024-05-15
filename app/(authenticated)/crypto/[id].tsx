@@ -19,11 +19,13 @@ import { CartesianChart, Line, useChartPressState } from 'victory-native'
 
 import { AnimatedTextInput } from '@/components/AnimatedTextInput'
 import { cryptoInfoCategories } from '@/constants/cryptoInfoCategories'
+import { QUERY_KEYS } from '@/constants/queryKeys'
 import { ChartTouchTooltip } from '@/modules/crypto/components/ChartTouchTooltip'
 import { useCryptoCurrencies } from '@/modules/crypto/hooks/useCryptoCurrencies'
-import { useCryptoTickers } from '@/modules/crypto/hooks/useCryptoTickers'
 import colors from '@/styles/colors'
 import { defaultStyles } from '@/styles/styles'
+import { Ticker } from '@/types'
+import { useQuery } from '@tanstack/react-query'
 
 export default function Page() {
   const { id } = useLocalSearchParams()
@@ -32,8 +34,42 @@ export default function Page() {
   const { state, isActive } = useChartPressState({ x: '0', y: { price: 0 } })
 
   const [activeCategory, setActiveCategory] = useState('Overview')
+  const [tickerName, setTickerName] = useState('')
+
   const { data, isError } = useCryptoCurrencies(+id!)
-  const { data: tickers } = useCryptoTickers()
+
+  useEffect(() => {
+    if (data && data[+id!]) {
+      const newTickerName =
+        data[+id!].symbol === 'BNB'
+          ? 'bnb-binance-coin'
+          : `${data[+id!].symbol.toLowerCase()}-${data[+id!].name.toLowerCase()}`
+      setTickerName(newTickerName)
+    } else {
+      setTickerName('')
+    }
+  }, [data, id])
+
+  const {
+    data: tickers,
+    isError: tickerError,
+    isLoading: tickerLoading,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.GET_TICKER, tickerName],
+    queryFn: (): Promise<Ticker[]> =>
+      fetch(`/api/tickers?tickername=${tickerName}`)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error('Network response was not ok')
+          }
+          return res.json()
+        })
+        .then((data) => {
+          console.log('Fetched data:', data)
+          return data
+        }),
+    enabled: !!tickerName,
+  })
 
   useEffect(() => {
     if (isActive) Haptics.selectionAsync()
@@ -54,7 +90,7 @@ export default function Page() {
     }
   })
 
-  if (isError) {
+  if (isError || tickerError) {
     return (
       <View style={{ alignItems: 'center' }}>
         <Text style={{ color: colors.error }}>No data found!</Text>
@@ -144,54 +180,60 @@ export default function Page() {
         renderItem={({ item }) => (
           <>
             <View style={[defaultStyles.block, { height: 500 }]}>
-              {tickers && (
-                <>
-                  {!isActive && (
-                    <View>
-                      <Text style={{ fontSize: 30, fontWeight: 'bold', color: colors.dark }}>
-                        {tickers[tickers.length - 1].price.toFixed(2)}
-                      </Text>
-                      <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.gray }}>Today</Text>
-                    </View>
-                  )}
-                  {isActive && (
-                    <View>
-                      <AnimatedTextInput
-                        editable={false}
-                        underlineColorAndroid={'transparent'}
-                        style={{ fontSize: 30, fontWeight: 'bold', color: colors.dark }}
-                        animatedProps={animatedText}
-                      />
-                      <AnimatedTextInput
-                        editable={false}
-                        underlineColorAndroid={'transparent'}
-                        style={{ fontSize: 18, color: colors.gray }}
-                        animatedProps={animatedDateText}
-                      />
-                    </View>
-                  )}
-                  <CartesianChart
-                    chartPressState={state}
-                    data={tickers}
-                    xKey="timestamp"
-                    yKeys={['price']}
-                    axisOptions={{
-                      font,
-                      tickCount: 3,
-                      labelOffset: { x: -2, y: 0 },
-                      labelColor: colors.gray,
-                      formatXLabel: (ms) => format(new Date(ms), 'MM/yyyy'),
-                      formatYLabel: (value) => `${value} €`,
-                    }}
-                  >
-                    {({ points }) => (
-                      <>
-                        <Line points={points.price} color={colors.primary} strokeWidth={3} />
-                        {isActive && <ChartTouchTooltip x={state.x.position} y={state.y.price.position} />}
-                      </>
+              {tickerLoading ? (
+                <View>
+                  <Text>LOADING</Text>
+                </View>
+              ) : (
+                tickers && (
+                  <>
+                    {!isActive && (
+                      <View>
+                        <Text style={{ fontSize: 30, fontWeight: 'bold', color: colors.dark }}>
+                          {tickers[tickers.length - 1].price.toFixed(2)}
+                        </Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.gray }}>Today</Text>
+                      </View>
                     )}
-                  </CartesianChart>
-                </>
+                    {isActive && (
+                      <View>
+                        <AnimatedTextInput
+                          editable={false}
+                          underlineColorAndroid={'transparent'}
+                          style={{ fontSize: 30, fontWeight: 'bold', color: colors.dark }}
+                          animatedProps={animatedText}
+                        />
+                        <AnimatedTextInput
+                          editable={false}
+                          underlineColorAndroid={'transparent'}
+                          style={{ fontSize: 18, color: colors.gray }}
+                          animatedProps={animatedDateText}
+                        />
+                      </View>
+                    )}
+                    <CartesianChart
+                      chartPressState={state}
+                      data={tickers}
+                      xKey="timestamp"
+                      yKeys={['price']}
+                      axisOptions={{
+                        font,
+                        tickCount: 3,
+                        labelOffset: { x: -2, y: 0 },
+                        labelColor: colors.gray,
+                        formatXLabel: (ms) => format(new Date(ms), 'MM/yyyy'),
+                        formatYLabel: (value) => `${value} €`,
+                      }}
+                    >
+                      {({ points }) => (
+                        <>
+                          <Line points={points.price} color={colors.primary} strokeWidth={3} />
+                          {isActive && <ChartTouchTooltip x={state.x.position} y={state.y.price.position} />}
+                        </>
+                      )}
+                    </CartesianChart>
+                  </>
+                )
               )}
             </View>
             <View style={[defaultStyles.block, { marginTop: 20 }]}>

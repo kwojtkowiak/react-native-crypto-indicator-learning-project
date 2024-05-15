@@ -1,10 +1,12 @@
-import { QUERY_KEYS } from '@/constants/queryKeys'
-import { Ticker } from '@/types'
-import { useQuery } from '@tanstack/react-query'
+// import { QUERY_KEYS } from '@/constants/queryKeys'
+// import { Ticker } from '@/types'
+// import { useQuery } from '@tanstack/react-query'
 
-export function useCryptoTickers() {
-  return useQuery({
-    queryKey: [QUERY_KEYS.GET_TICKER],
-    queryFn: (): Promise<Ticker[]> => fetch(`/api/tickers`).then((res) => res.json()),
-  })
-}
+// export function useCryptoTickers(symbol: string, name: string, ids: number[] | number) {
+//   const tickerName = symbol == 'BNB' ? 'bnb-binance-coin' : `${symbol.toLowerCase()}-${name}`
+
+//   return useQuery({
+//     queryKey: [QUERY_KEYS.GET_TICKER, symbol, name],
+//     queryFn: (): Promise<Ticker[]> => fetch(`/api/tickers?tickername=${tickerName}`).then((res) => res.json()),
+//   })
+// }
