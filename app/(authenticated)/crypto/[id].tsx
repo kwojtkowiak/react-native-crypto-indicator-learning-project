@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { useFont } from '@shopify/react-native-skia'
 import { format } from 'date-fns'
+import * as Haptics from 'expo-haptics'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import {
@@ -13,10 +14,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { useAnimatedProps } from 'react-native-reanimated'
 import { CartesianChart, Line, useChartPressState } from 'victory-native'
-import * as Haptics from 'expo-haptics'
 
+import { AnimatedTextInput } from '@/components/AnimatedTextInput'
 import { cryptoInfoCategories } from '@/constants/cryptoInfoCategories'
+import { ChartTouchTooltip } from '@/modules/crypto/components/ChartTouchTooltip'
 import { useCryptoCurrencies } from '@/modules/crypto/hooks/useCryptoCurrencies'
 import { useCryptoTickers } from '@/modules/crypto/hooks/useCryptoTickers'
 import colors from '@/styles/colors'
@@ -27,14 +30,29 @@ export default function Page() {
 
   const font = useFont(require('@/assets/fonts/SpaceMono-Regular.ttf'), 12)
   const { state, isActive } = useChartPressState({ x: '0', y: { price: 0 } })
+
   const [activeCategory, setActiveCategory] = useState('Overview')
   const { data, isError } = useCryptoCurrencies(+id!)
   const { data: tickers } = useCryptoTickers()
 
   useEffect(() => {
-    console.log(isActive)
     if (isActive) Haptics.selectionAsync()
   }, [isActive])
+
+  const animatedText = useAnimatedProps(() => {
+    return {
+      text: `${state.y.price.value.value.toFixed(2)} €`,
+      defaultValue: '',
+    }
+  })
+
+  const animatedDateText = useAnimatedProps(() => {
+    const date = new Date(state.x.value.value)
+    return {
+      text: `${date.toLocaleDateString()}`,
+      defaultValue: '',
+    }
+  })
 
   if (isError) {
     return (
@@ -127,22 +145,53 @@ export default function Page() {
           <>
             <View style={[defaultStyles.block, { height: 500 }]}>
               {tickers && (
-                <CartesianChart
-                  chartPressState={state}
-                  data={tickers}
-                  xKey="timestamp"
-                  yKeys={['price']}
-                  axisOptions={{
-                    font,
-                    tickCount: 3,
-                    labelOffset: { x: -2, y: 0 },
-                    labelColor: colors.gray,
-                    formatXLabel: (ms) => format(new Date(ms), 'MM/yyyy'),
-                    formatYLabel: (value) => `${value} €`,
-                  }}
-                >
-                  {({ points }) => <Line points={points.price} color={colors.primary} strokeWidth={3} />}
-                </CartesianChart>
+                <>
+                  {!isActive && (
+                    <View>
+                      <Text style={{ fontSize: 30, fontWeight: 'bold', color: colors.dark }}>
+                        {tickers[tickers.length - 1].price.toFixed(2)}
+                      </Text>
+                      <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.gray }}>Today</Text>
+                    </View>
+                  )}
+                  {isActive && (
+                    <View>
+                      <AnimatedTextInput
+                        editable={false}
+                        underlineColorAndroid={'transparent'}
+                        style={{ fontSize: 30, fontWeight: 'bold', color: colors.dark }}
+                        animatedProps={animatedText}
+                      />
+                      <AnimatedTextInput
+                        editable={false}
+                        underlineColorAndroid={'transparent'}
+                        style={{ fontSize: 18, color: colors.gray }}
+                        animatedProps={animatedDateText}
+                      />
+                    </View>
+                  )}
+                  <CartesianChart
+                    chartPressState={state}
+                    data={tickers}
+                    xKey="timestamp"
+                    yKeys={['price']}
+                    axisOptions={{
+                      font,
+                      tickCount: 3,
+                      labelOffset: { x: -2, y: 0 },
+                      labelColor: colors.gray,
+                      formatXLabel: (ms) => format(new Date(ms), 'MM/yyyy'),
+                      formatYLabel: (value) => `${value} €`,
+                    }}
+                  >
+                    {({ points }) => (
+                      <>
+                        <Line points={points.price} color={colors.primary} strokeWidth={3} />
+                        {isActive && <ChartTouchTooltip x={state.x.position} y={state.y.price.position} />}
+                      </>
+                    )}
+                  </CartesianChart>
+                </>
               )}
             </View>
             <View style={[defaultStyles.block, { marginTop: 20 }]}>
