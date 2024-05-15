@@ -18,7 +18,7 @@ const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 export {
   // Catch any errors thrown by the Layout component.
-  ErrorBoundary
+  ErrorBoundary,
 } from 'expo-router'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -26,7 +26,7 @@ SplashScreen.preventAutoHideAsync()
 
 export function InitialLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('@/assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   })
   const router = useRouter()

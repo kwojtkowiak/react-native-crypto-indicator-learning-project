@@ -51,7 +51,7 @@ export default function Page() {
                   <Ionicons
                     name={currency.quote.EUR.percent_change_1h > 0 ? 'caret-up' : 'caret-down'}
                     size={16}
-                    color={colors.success}
+                    color={currency.quote.EUR.percent_change_1h > 0 ? colors.success : colors.error}
                   />
                   <Text style={{ color: currency.quote.EUR.percent_change_1h > 0 ? colors.success : colors.error }}>
                     {currency.quote.EUR.percent_change_1h.toFixed(2)}
