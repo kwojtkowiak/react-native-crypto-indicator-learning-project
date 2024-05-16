@@ -1,3 +1,4 @@
+import { useTempBackgroundStore } from '@/store/backgroundStore'
 import { useAuth } from '@clerk/clerk-expo'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SplashScreen, useRouter } from 'expo-router'
@@ -9,6 +10,7 @@ export function UserInactivityProvider(props: { children: any }) {
   const router = useRouter()
   const { isSignedIn } = useAuth()
   const [isBackground, setIsBackground] = useState(false)
+  const temporarilyMovedToBackground = useTempBackgroundStore((state) => state.temporarilyMovedToBackground)
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', handleAppStateChange)
@@ -16,33 +18,36 @@ export function UserInactivityProvider(props: { children: any }) {
     return () => {
       subscription.remove()
     }
-  }, [])
+  }, [temporarilyMovedToBackground])
+
+  const recordStartTime = async () => {
+    await AsyncStorage.setItem('startTime', Date.now().toString())
+  }
 
   const handleAppStateChange = async (nextAppState: AppStateStatus) => {
-    setIsBackground(true)
+    if (temporarilyMovedToBackground) {
+      appState.current = nextAppState
+      return
+    }
+    if (nextAppState == 'inactive') {
+      setIsBackground(true)
+    }
     if (nextAppState == 'background') {
       recordStartTime()
     } else if (nextAppState == 'active' && appState.current.match(/background/)) {
       const startTime = await AsyncStorage.getItem('startTime')
       const elapsed = Date.now() - (startTime ? parseInt(startTime, 10) : 0)
       if (elapsed > 2500 && isSignedIn) {
-        console.log('🚀 ~ handleAppStateChange ~ isSignedIn:', isSignedIn)
-        console.log('🚀 ~ handleAppStateChange ~ elapsed:', elapsed)
         router.replace('/(authenticated)/(modals)/lock')
       }
       setIsBackground(false)
     }
     appState.current = nextAppState
-    console.log('🚀 ~ handleAppStateChange ~ appState.current:', appState.current)
-  }
-
-  const recordStartTime = async () => {
-    await AsyncStorage.setItem('startTime', Date.now().toString())
   }
 
   return (
     <>
-      {isBackground && (
+      {(isBackground || temporarilyMovedToBackground) && (
         <View style={styles.blankScreen}>
           <Text style={styles.hiddenText}>HIDDEN FOR SECURITY REASONS</Text>
         </View>

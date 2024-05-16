@@ -22,6 +22,11 @@ export type BalanceState = {
   clearTransactions: () => void
 }
 
+export type TempBackgroundState = {
+  temporarilyMovedToBackground: boolean
+  setTemporarilyMovedToBackground: () => void
+}
+
 export type TilePosition = {
   x: number
   y: number

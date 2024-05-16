@@ -1,13 +1,15 @@
-import colors from '@/styles/colors'
 import { useUser } from '@clerk/clerk-expo'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
+import * as LocalAuthentication from 'expo-local-authentication'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import * as LocalAuthentication from 'expo-local-authentication'
 import { useSharedValue } from 'react-native-reanimated'
+import { SafeAreaView } from 'react-native-safe-area-context'
+
+import { useTempBackgroundStore } from '@/store/backgroundStore'
+import colors from '@/styles/colors'
 
 export default function Page() {
   const { user } = useUser()
@@ -15,6 +17,7 @@ export default function Page() {
   const [code, setCode] = useState<number[]>([])
   const codeLength = Array(6).fill(0)
   const router = useRouter()
+  const setTemporarilyMovedToBackground = useTempBackgroundStore((state) => state.setTemporarilyMovedToBackground)
 
   const offest = useSharedValue(0)
 
@@ -41,12 +44,16 @@ export default function Page() {
   }
 
   async function onBiometricTouch() {
+    setTemporarilyMovedToBackground()
     const { success } = await LocalAuthentication.authenticateAsync()
     if (success) {
       router.replace('/(authenticated)/(tabs)/home')
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
     }
+    setTimeout(() => {
+      setTemporarilyMovedToBackground()
+    }, 1000)
   }
 
   return (
