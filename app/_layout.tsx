@@ -58,7 +58,11 @@ export function InitialLayout() {
   }, [isSignedIn])
 
   if (!loaded || !isLoaded) {
-    return <ActivityIndicator color={colors.primary} />
+    return (
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    )
   }
 
   return (

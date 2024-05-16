@@ -1,31 +1,121 @@
+import colors from '@/styles/colors'
 import { useUser } from '@clerk/clerk-expo'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import * as Haptics from 'expo-haptics'
+import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import * as LocalAuthentication from 'expo-local-authentication'
+import { useSharedValue } from 'react-native-reanimated'
 
 export default function Page() {
   const { user } = useUser()
   const [firstName, setFirstName] = useState(user?.firstName)
   const [code, setCode] = useState<number[]>([])
+  const codeLength = Array(6).fill(0)
+  const router = useRouter()
+
+  const offest = useSharedValue(0)
 
   useEffect(() => {
     if (code.length === 6) {
       console.log(code)
+      if (code.join('') == '111111') {
+        router.replace('/(authenticated)/(tabs)/home')
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+        setCode([])
+      }
     }
   }, [code])
 
+  function onNumberPress(number: number) {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    setCode([...code, number])
+  }
+
+  function numberBackspace() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    setCode(code.slice(0, -1))
+  }
+
+  async function onBiometricTouch() {
+    const { success } = await LocalAuthentication.authenticateAsync()
+    if (success) {
+      router.replace('/(authenticated)/(tabs)/home')
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+    }
+  }
+
   return (
-    <SafeAreaView style={{ backgroundColor: 'yellow' }}>
-      <Text>Welcome back, {firstName}</Text>
+    <SafeAreaView>
+      <Text style={styles.greeting}>Welcome back, {firstName}</Text>
+      <View style={[styles.codeView]}>
+        {codeLength.map((_, index) => (
+          <View
+            key={index}
+            style={[styles.codeEmpty, { backgroundColor: code[index] ? colors.primary : colors.lightGray }]}
+          ></View>
+        ))}
+      </View>
+      <View style={styles.numbersView}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          {[1, 2, 3].map((number) => (
+            <TouchableOpacity key={number} onPress={() => onNumberPress(number)}>
+              <Text style={styles.number}>{number}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          {[4, 5, 6].map((number) => (
+            <TouchableOpacity key={number} onPress={() => onNumberPress(number)}>
+              <Text style={styles.number}>{number}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          {[7, 8, 9].map((number) => (
+            <TouchableOpacity key={number} onPress={() => onNumberPress(number)}>
+              <Text style={styles.number}>{number}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <TouchableOpacity onPress={onBiometricTouch}>
+            <MaterialCommunityIcons name="face-recognition" size={26} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => onNumberPress(0)}>
+            <Text style={styles.number}>0</Text>
+          </TouchableOpacity>
+          <View style={{ minWidth: 12 }}>
+            {code.length > 0 && (
+              <TouchableOpacity onPress={numberBackspace}>
+                <MaterialCommunityIcons name="backspace-outline" size={26} color="black" />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+        <Text
+          style={{
+            alignSelf: 'center',
+            color: colors.primary,
+            fontWeight: '500',
+            fontSize: 18,
+          }}
+        >
+          Forgot your passcode?
+        </Text>
+      </View>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  greeting: { fontSize: 24, fontWeight: 'bold' },
-  row: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', gap: 12 },
-  balance: { fontSize: 40, fontWeight: 'bold' },
-  currency: { fontSize: 20, fontWeight: '500' },
-  actionRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 20 },
-  transactions: { marginHorizontal: 20, padding: 14, backgroundColor: '#fff', borderRadius: 16, gap: 20 },
+  greeting: { fontSize: 24, fontWeight: 'bold', marginTop: 80, alignSelf: 'center' },
+  codeView: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 100, gap: 20 },
+  codeEmpty: { width: 40, height: 40, borderRadius: 20 },
+  numbersView: { marginHorizontal: 80, gap: 60 },
+  number: { fontSize: 32 },
 })
