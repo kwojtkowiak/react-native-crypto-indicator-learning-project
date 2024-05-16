@@ -19,13 +19,11 @@ import { CartesianChart, Line, useChartPressState } from 'victory-native'
 
 import { AnimatedTextInput } from '@/components/AnimatedTextInput'
 import { cryptoInfoCategories } from '@/constants/cryptoInfoCategories'
-import { QUERY_KEYS } from '@/constants/queryKeys'
 import { ChartTouchTooltip } from '@/modules/crypto/components/ChartTouchTooltip'
 import { useCryptoCurrencies } from '@/modules/crypto/hooks/useCryptoCurrencies'
+import { useCryptoTickers } from '@/modules/crypto/hooks/useCryptoTickers'
 import colors from '@/styles/colors'
 import { defaultStyles } from '@/styles/styles'
-import { Ticker } from '@/types'
-import { useQuery } from '@tanstack/react-query'
 
 export default function Page() {
   const { id } = useLocalSearchParams()
@@ -43,6 +41,8 @@ export default function Page() {
       const newTickerName =
         data[+id!].symbol === 'BNB'
           ? 'bnb-binance-coin'
+          : data[+id!].symbol === 'USDT'
+          ? 'usdt-tether'
           : `${data[+id!].symbol.toLowerCase()}-${data[+id!].name.toLowerCase()}`
       setTickerName(newTickerName)
     } else {
@@ -50,26 +50,7 @@ export default function Page() {
     }
   }, [data, id])
 
-  const {
-    data: tickers,
-    isError: tickerError,
-    isLoading: tickerLoading,
-  } = useQuery({
-    queryKey: [QUERY_KEYS.GET_TICKER, tickerName],
-    queryFn: (): Promise<Ticker[]> =>
-      fetch(`/api/tickers?tickername=${tickerName}`)
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error('Network response was not ok')
-          }
-          return res.json()
-        })
-        .then((data) => {
-          console.log('Fetched data:', data)
-          return data
-        }),
-    enabled: !!tickerName,
-  })
+  const { data: tickers, isError: tickerError, isLoading: tickerLoading } = useCryptoTickers(tickerName)
 
   useEffect(() => {
     if (isActive) Haptics.selectionAsync()
@@ -181,8 +162,8 @@ export default function Page() {
           <>
             <View style={[defaultStyles.block, { height: 500 }]}>
               {tickerLoading ? (
-                <View>
-                  <Text>LOADING</Text>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <ActivityIndicator color={colors.primary} />
                 </View>
               ) : (
                 tickers && (

@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
+import { UserInactivityProvider } from '@/context/UserInactivityProvider'
 import NavigationButton from '@/modules/navigation/components/NavigationButton'
 import colors from '@/styles/colors'
 import { tokenCache } from '@/utils/clerk.utils'
@@ -50,7 +51,7 @@ export function InitialLayout() {
     const inAuthGroup = segments[0] == '(authenticated)'
 
     if (isSignedIn && !inAuthGroup) {
-      router.replace('/(authenticated)/(tabs)/crypto')
+      router.replace('/(authenticated)/(modals)/lock')
     } else if (!isSignedIn) {
       router.replace('/')
     }
@@ -113,19 +114,22 @@ export function InitialLayout() {
           headerTitleAlign: 'center',
         }}
       />
+      <Stack.Screen name="(authenticated)/(modals)/lock" options={{ headerShown: false, animation: 'none' }} />
     </Stack>
   )
 }
 
 export default function RootLayoutNav() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <StatusBar style="light" />
-          <InitialLayout />
-        </GestureHandlerRootView>
-      </ClerkProvider>
-    </QueryClientProvider>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
+      <UserInactivityProvider>
+        <QueryClientProvider client={queryClient}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <StatusBar style="light" />
+            <InitialLayout />
+          </GestureHandlerRootView>
+        </QueryClientProvider>
+      </UserInactivityProvider>
+    </ClerkProvider>
   )
 }
