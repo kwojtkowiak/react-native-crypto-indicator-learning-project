@@ -119,6 +119,16 @@ export function InitialLayout() {
         }}
       />
       <Stack.Screen name="(authenticated)/(modals)/lock" options={{ headerShown: false, animation: 'none' }} />
+      <Stack.Screen
+        name="(authenticated)/(modals)/account"
+        options={{
+          presentation: 'transparentModal',
+          animation: 'fade',
+          title: '',
+          headerTransparent: true,
+          headerLeft: () => <NavigationButton iconName="close-outline" onPress={router.back} iconColor="#fff" />,
+        }}
+      />
     </Stack>
   )
 }
