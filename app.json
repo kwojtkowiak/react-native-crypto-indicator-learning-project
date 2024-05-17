@@ -43,10 +43,28 @@
           "faceIDPermission": "Allow Crypto Indicator App to use Face ID."
         }
       ],
+      [
+        "expo-dynamic-app-icon",
+        {
+          "default": {
+            "image": "./assets/images/icon.png",
+            "prerendered": true
+          },
+          "dark": {
+            "image": "./assets/images/icon-dark.png",
+            "prerendered": true
+          },
+          "green": {
+            "image": "./assets/images/icon-green.png",
+            "prerendered": true
+          }
+        }
+      ],
       "expo-secure-store",
       "expo-localization",
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      "expo-dynamic-app-icon"
     ],
     "experiments": {
       "typedRoutes": true

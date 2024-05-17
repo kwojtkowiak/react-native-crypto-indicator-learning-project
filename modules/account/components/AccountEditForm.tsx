@@ -1,15 +1,13 @@
-import { TextInput, View, Text, StyleSheet, Image } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Ionicons } from '@expo/vector-icons'
 import { UserResource } from '@clerk/types'
-import { useAuth } from '@clerk/clerk-expo'
-import { useState } from 'react'
+import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
+import { useState } from 'react'
+import { Image, StyleSheet, Text, TextInput, View } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 import colors from '@/styles/colors'
 
 export function AccountEditForm(props: { user: UserResource | null | undefined }) {
-  const { signOut } = useAuth()
   const [firstName, setFirstName] = useState(props.user?.firstName)
   const [lastName, setLastName] = useState(props.user?.lastName)
   const [edit, setEdit] = useState(false)

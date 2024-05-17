@@ -17,10 +17,10 @@ export function ActivityList() {
 
   return (
     <View style={styles.actionRow}>
-      <RoundButton icon="add" text="Add money" onPress={onAddMoney} />
-      <RoundButton icon="refresh" text="Exchange" onPress={clearTransactions} />
-      <RoundButton icon="list" text="Details" />
-      <RoundButton icon="ellipsis-horizontal" text="More" />
+      <RoundButton isCircle icon="add" text="Add money" onPress={onAddMoney} />
+      <RoundButton isCircle icon="refresh" text="Exchange" onPress={clearTransactions} />
+      <RoundButton isCircle icon="list" text="Details" />
+      <RoundButton isCircle icon="ellipsis-horizontal" text="More" />
     </View>
   )
 }
