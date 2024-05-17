@@ -5,7 +5,13 @@ import * as LocalAuthentication from 'expo-local-authentication'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { useSharedValue } from 'react-native-reanimated'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { useTempBackgroundStore } from '@/store/backgroundStore'
@@ -19,7 +25,15 @@ export default function Page() {
   const router = useRouter()
   const setTemporarilyMovedToBackground = useTempBackgroundStore((state) => state.setTemporarilyMovedToBackground)
 
-  const offest = useSharedValue(0)
+  const offset = useSharedValue(0)
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: offset.value }],
+    }
+  })
+
+  const OFFSET = 20
+  const TIME = 80
 
   useEffect(() => {
     if (code.length === 6) {
@@ -27,6 +41,11 @@ export default function Page() {
       if (code.join('') == '111111') {
         router.replace('/(authenticated)/(tabs)/home')
       } else {
+        offset.value = withSequence(
+          withTiming(-OFFSET, { duration: TIME / 2 }),
+          withRepeat(withTiming(OFFSET, { duration: TIME }), 4, true),
+          withTiming(0, { duration: TIME / 2 })
+        )
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
         setCode([])
       }
@@ -59,14 +78,14 @@ export default function Page() {
   return (
     <SafeAreaView>
       <Text style={styles.greeting}>Welcome back, {firstName}</Text>
-      <View style={[styles.codeView]}>
+      <Animated.View style={[styles.codeView, animatedStyle]}>
         {codeLength.map((_, index) => (
           <View
             key={index}
             style={[styles.codeEmpty, { backgroundColor: code[index] ? colors.primary : colors.lightGray }]}
           ></View>
         ))}
-      </View>
+      </Animated.View>
       <View style={styles.numbersView}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           {[1, 2, 3].map((number) => (

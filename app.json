@@ -40,7 +40,7 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+          "faceIDPermission": "Allow Crypto Indicator App to use Face ID."
         }
       ],
       "expo-secure-store",
