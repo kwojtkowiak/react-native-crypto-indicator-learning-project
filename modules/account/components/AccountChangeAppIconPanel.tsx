@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { getAppIcon, setAppIcon } from 'expo-dynamic-app-icon'
 import { useEffect, useState } from 'react'
-import { Image, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const icons = [

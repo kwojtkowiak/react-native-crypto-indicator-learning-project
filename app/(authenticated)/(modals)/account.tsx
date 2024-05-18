@@ -13,7 +13,7 @@ export default function Page() {
     <BlurView intensity={80} tint={'dark'} style={styles.blurView}>
       <AccountEditForm user={user} />
       <AccountActionButtonsPanel />
-      <AccountChangeAppIconPanel />
+      {/* <AccountChangeAppIconPanel /> */}
     </BlurView>
   )
 }
