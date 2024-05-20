@@ -1,17 +1,29 @@
 import { Ionicons } from '@expo/vector-icons'
-import { StyleSheet, Text, View } from 'react-native'
+import { useState } from 'react'
+import { Button, StyleSheet, Text, View } from 'react-native'
 
 import colors from '@/styles/colors'
 import { defaultStyles } from '@/styles/styles'
 import { Transaction } from '@/types'
 
 export default function TransactionList(props: { transactions: Transaction[] }) {
+  const reversedTransactions = props.transactions.reverse()
+
+  const [visibleTransactions, setVisibleTransactions] = useState(reversedTransactions.slice(0, 10))
+
+  const loadMore = () => {
+    const moreTransactionsCount = visibleTransactions.length + 10
+    setVisibleTransactions(reversedTransactions.slice(-moreTransactionsCount))
+  }
+
   return (
     <>
       <Text style={defaultStyles.sectionHeader}>Transactions</Text>
       <View style={styles.transactions}>
-        {props.transactions.length == 0 && <Text style={{ padding: 14, color: colors.gray }}>No transactions yet</Text>}
-        {props.transactions.reverse().map((transaction) => (
+        {visibleTransactions.length === 0 && (
+          <Text style={{ padding: 14, color: colors.gray }}>No transactions yet</Text>
+        )}
+        {visibleTransactions.map((transaction) => (
           <View key={transaction.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
             <View style={styles.circle}>
               <Ionicons name={transaction.amount > 0 ? 'add' : 'remove'} size={24} color={colors.dark} />
@@ -25,6 +37,9 @@ export default function TransactionList(props: { transactions: Transaction[] }) 
             </Text>
           </View>
         ))}
+        {props.transactions.length > visibleTransactions.length && (
+          <Button title="Load More" onPress={loadMore} color={colors.primary} />
+        )}
       </View>
     </>
   )
